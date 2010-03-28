@@ -4,6 +4,10 @@
 class GlobalMockIgnore {
 }
 
+// raised when a global function is called out of turn
+class GlobalMockUnexpectedException extends Exception {
+}
+
 class GlobalMock {
     public $testing = false;
     private $expecting = array();
@@ -24,13 +28,14 @@ class GlobalMock {
             list($e_name,
                  $e_arguments,
                  $e_return) = array_shift($this->expecting);
-            if (((gettype($e_name) != 'object' &&
-                  get_class($e_name) != 'GlobalMockIgnore') ||
-                 $e_name != $name) ||
-                ((gettype($e_arguments) != 'object' &&
-                  get_class($e_arguments) != 'GlobalMockIgnore') ||
-                 $e_arguments != $arguments)) {
-                die('Expecting call to "'. $e_name .'" with arguments: '.
+            if (($e_name != $name &&
+                 (gettype($e_name) != 'object' ||
+                  get_class($e_name) != 'GlobalMockIgnore')) ||
+                ($e_arguments != $arguments &&
+                 (gettype($e_arguments) != 'object' ||
+                  get_class($e_arguments) != 'GlobalMockIgnore'))) {
+                throw new GlobalMockUnexpectedException(
+                    'Expecting call to "'. $e_name .'" with arguments: '.
                      print_r($e_arguments, true) ."\n".
                      'However "'. $name .'" was called with arguments: '.
                      print_r($arguments, true) ."\n");

@@ -8,12 +8,25 @@ class GlobalMockIgnore {
 class GlobalMockUnexpectedException extends Exception {
 }
 
+// GlobalMock is a Singleton 
+// see http://php.net/manual/en/language.oop5.patterns.php
 class GlobalMock {
-    public $testing = false;
     private $expecting = array();
 
-    function __construct($testing) {
-        $this->testing = $testing;
+    // Can't clone singletons
+    final private function __clone() {}
+
+    // Can't directly construct singletons
+    protected function __construct() {}
+
+    // There can be only one instance of GlobalMock
+    public function getInstance() {
+        static $instance = null;
+        return $instance ? $instance : $instance = new GlobalMock();
+    }
+
+    public function testing() {
+        putenv('GLOBALMOCK_TESTING=true');
     }
 
     public function add_expected($name, $arguments, $return) {
@@ -21,7 +34,7 @@ class GlobalMock {
     }
 
     public function __call($name, $arguments) {
-        if (!$this->testing) {
+        if (!getenv('GLOBALMOCK_TESTING')) {
             // If we are not testing, call the global function
             return call_user_func_array($name, $arguments);
         } else {

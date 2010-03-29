@@ -9,13 +9,14 @@ function call_global_function() {
 
 class TestGlobalMock extends UnitTestCase {
     function testPassCallThrough() {
-        $gm = new GlobalMock(false);
+        $gm = GlobalMock::getInstance();
         $this->assertTrue($gm->call_global_function(),
                           'called_global_function');
     }
 
     function testUnexpectedCall() {
-        $gm = new GlobalMock(true);
+        $gm = GlobalMock::getInstance();
+        $gm->testing();
         try {
             $gm->call_global_function();
             $this->assertFalse(true);
@@ -26,7 +27,8 @@ class TestGlobalMock extends UnitTestCase {
     }
 
     function testExpectedCall() {
-        $gm = new GlobalMock(true);
+        $gm = GlobalMock::getInstance();
+        $gm->testing();
         $gm->add_expected('call_global_function',
                           array(),
                           'not the global return');
@@ -35,7 +37,8 @@ class TestGlobalMock extends UnitTestCase {
     }
 
     function testCallWithIgnoredParameters() {
-        $gm = new GlobalMock(true);
+        $gm = GlobalMock::getInstance();
+        $gm->testing();
         $gm->add_expected('call_global_function',
                           new GlobalMockIgnore(),
                           'return value');
@@ -44,7 +47,8 @@ class TestGlobalMock extends UnitTestCase {
     }
 
     function testCallWithIgnoredName() {
-        $gm = new GlobalMock(true);
+        $gm = GlobalMock::getInstance();
+        $gm->testing();
         $gm->add_expected(new GlobalMockIgnore(),
                           array('these', 'params'),
                           'return this');
@@ -53,7 +57,8 @@ class TestGlobalMock extends UnitTestCase {
     }
 
     function testCallWithBothIgnored() {
-        $gm = new GlobalMock(true);
+        $gm = GlobalMock::getInstance();
+        $gm->testing();
         $gm->add_expected(new GlobalMockIgnore(),
                           new GlobalMockIgnore(),
                           'both ignored');

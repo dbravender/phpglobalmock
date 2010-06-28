@@ -1,7 +1,7 @@
 <?php
 
-require_once('simpletest/autorun.php');
-require_once('../global_mock.php');
+require_once(realpath(dirname(__FILE__) . '/simpletest/autorun.php'));
+require_once(realpath(dirname(__FILE__) . '/../global_mock.php'));
 
 function call_global_function() {
     return 'called_global_function';
@@ -64,6 +64,20 @@ class TestGlobalMock extends UnitTestCase {
                           'both ignored');
         $this->assertEqual($gm->any_function('any', 'params'),
                            'both ignored');
+    }
+
+    function testReset() {
+        $gm = GlobalMock::getInstance();
+        $gm->testing();
+        $gm->add_expected('some_function_that_doesnt_exist',
+                          array(),
+                          False);
+        $gm->reset();
+        $gm->add_expected('call_global_function',
+                          new GlobalMockIgnore(),
+                          'return value');
+        $this->assertEqual($gm->call_global_function(),
+                           'return value');
     }
 }
 ?>

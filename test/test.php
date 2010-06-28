@@ -72,7 +72,7 @@ class TestGlobalMock extends UnitTestCase {
         $gm->add_expected('some_function_that_doesnt_exist',
                           array(),
                           False);
-        $gm->reset();
+        $gm->testing();
         $gm->add_expected('call_global_function',
                           new GlobalMockIgnore(),
                           'return value');

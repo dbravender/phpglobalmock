@@ -27,9 +27,6 @@ class GlobalMock {
 
     public function testing() {
         putenv('GLOBALMOCK_TESTING=true');
-    }
-
-    public function reset() {
         $this->expecting = array();
     }
 
